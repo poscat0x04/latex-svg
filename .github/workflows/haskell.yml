@@ -1,0 +1,24 @@
+name: Haskell CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Stack
+      uses: mstksg/setup-stack@v1
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libgpgme11-dev libpq-dev
+    - name: config stack
+      run : |
+        mkdir .stack
+        eval "echo allow-newer: true > .stack/config.yaml"
+    - name: Build
+      run: stack build --stack-root $(pwd)/.stack
+    - name: Run tests
+      run: stack test --stack-root $(pwd)/.stack
