@@ -1,9 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Text.LaTeX.SVG
        ( FormulaOptions(..)
        , CompilerError(..)
        , CompilerOptions(..)
+       , Formula
        , compileSvg
        , simpleAmsInline
        , simpleAmsDisplay
@@ -19,8 +21,11 @@ import Control.Monad
 import Data.Default
 import qualified Data.ByteString as BS
 import Data.Dynamic
-import Data.List
-import Graphics.Svg
+import           Data.Text (Text)
+import qualified Data.Text    as T
+import qualified Data.Text.IO as T
+import Graphics.Svg ( parseSvgFile
+                    , Document)
 
 data CompilerError
     = LaTeXError String
@@ -56,14 +61,14 @@ instance Default CompilerOptions where
 
 data FormulaOptions
     = FormulaOptions
-      { preamble :: String , environment :: String
+      { preamble :: Text , environment :: Text
       }
 
-type Formula = String
+type Formula = Text
 
-withPackage :: [String] -> String
+withPackage :: [Text] -> Text
 withPackage ps =
-    intercalate "\n" $
+    T.intercalate "\n" $
       map (\p -> "\\usepackage{" <> p <> "}") ps
 
 simpleAmsInline :: FormulaOptions
@@ -74,9 +79,9 @@ simpleAmsDisplay :: FormulaOptions
 simpleAmsDisplay =
     FormulaOptions (withPackage ["amsmath"]) "displaymath"
 
-formatDoc :: FormulaOptions -> Formula -> String
+formatDoc :: FormulaOptions -> Formula -> Text
 formatDoc FormulaOptions{..} f =
-    let fmt = intercalate "\n"
+    let fmt = T.intercalate "\n"
     in fmt
       [ "\\nonstopmode"
       , "\\documentclass[12pt]{article}"
@@ -107,7 +112,7 @@ compileSvg CompilerOptions{..} opt eqn =
         cleanUp = forM_ [texF, auxF, logF, pdfF] removeIfExists
     in handle (\e -> do {cleanUp; throwIO (e :: SomeException)}) $ do
         let doc = formatDoc opt eqn
-        writeFile texF doc
+        T.writeFile texF doc
         (c, o, e) <- readProcessWithExitCode latexCommand (latexArgs ++ [texF]) ""
         when (c /= ExitSuccess) $
             throwIO $ LaTeXError $ o <> "\n" <> e

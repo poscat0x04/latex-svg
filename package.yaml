@@ -23,9 +23,10 @@ dependencies:
 - svg-tree
 - xml
 - filepath
-- pandoc-types
+- pandoc-types >= 1.19
 - directory
 - process
+- text
 - data-default
 - bytestring
 
