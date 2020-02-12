@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6b2fa4bcd73bf9dc09a4c29e9c99e2c6006a7709b60263aa75b280becd244b2d
+-- hash: 3a60ce8d9ad4ea407c1e077b261f76e271cdc8c6c1521a910dec531db49de277
 
 name:           latex-svg
 version:        0.1.0.0
@@ -25,12 +25,16 @@ source-repository head
   location: https://github.com/poscat0x04/latex-svg
 
 library
+  exposed-modules:
+      Text.LaTeX.SVG
   other-modules:
       Paths_latex_svg
   hs-source-dirs:
       src
   build-depends:
       base >=4.7 && <5
+    , bytestring
+    , data-default
     , directory
     , filepath
     , pandoc-types

@@ -26,6 +26,8 @@ dependencies:
 - pandoc-types
 - directory
 - process
+- data-default
+- bytestring
 
 library:
   source-dirs: src
