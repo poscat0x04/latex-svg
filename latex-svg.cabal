@@ -1,0 +1,40 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 6b2fa4bcd73bf9dc09a4c29e9c99e2c6006a7709b60263aa75b280becd244b2d
+
+name:           latex-svg
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/poscat0x04/latex-svg#readme>
+homepage:       https://github.com/poscat0x04/latex-svg#readme
+bug-reports:    https://github.com/poscat0x04/latex-svg/issues
+author:         Poscat
+maintainer:     poscat@mail.poscat.moe
+copyright:      2020 Poscat
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/poscat0x04/latex-svg
+
+library
+  other-modules:
+      Paths_latex_svg
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , directory
+    , filepath
+    , pandoc-types
+    , process
+    , svg-tree
+    , xml
+  default-language: Haskell2010
