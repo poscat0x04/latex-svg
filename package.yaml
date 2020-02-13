@@ -20,15 +20,12 @@ description:         Please see the README on GitHub at <https://github.com/posc
 
 dependencies:
 - base >= 4.7 && < 5
-- svg-tree
-- xml
 - filepath
 - pandoc-types >= 1.19
 - directory
 - process
 - text
 - data-default
-- bytestring
 - lrucache
 
 library:

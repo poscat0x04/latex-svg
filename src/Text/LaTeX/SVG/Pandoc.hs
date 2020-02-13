@@ -8,9 +8,7 @@ import Data.Default
 import System.IO
 import Control.Exception
 import Text.LaTeX.SVG
-import Text.XML.Light.Output
 import qualified Data.Text as T
-import Graphics.Svg
 
 
 data PandocFormulaOptions
@@ -42,14 +40,13 @@ hideError = Handler $ \e -> do
     return $ Str "Error"
 
 filterPandocInlineWith
-  :: (FormulaOptions -> Formula -> IO Document)
+  :: (FormulaOptions -> Formula -> IO T.Text)
   -> PandocFormulaOptions
   -> Inline -> IO Inline
 filterPandocInlineWith f opt (Math mt t) =
     handles (errorHandler opt) $ do
-      doc <- f (formulaOptions opt mt) t
-      let xml = xmlOfDocument doc
-      return $ RawInline (Format "html") $ T.pack $ showElement xml
+      txt <- f (formulaOptions opt mt) t
+      return $ RawInline (Format "html") txt
     where
       handles = flip catches
 filterPandocInlineWith _ _ x = return x

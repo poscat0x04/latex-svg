@@ -19,13 +19,10 @@ import System.Process
 import Control.Exception
 import Control.Monad
 import Data.Default
-import qualified Data.ByteString as BS
 import Data.Dynamic
 import           Data.Text (Text)
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
-import Graphics.Svg ( parseSvgFile
-                    , Document)
 
 data CompilerError
     = LaTeXError String
@@ -85,10 +82,7 @@ formatDoc FormulaOptions{..} f =
     in fmt
       [ "\\nonstopmode"
       , "\\documentclass[12pt]{article}"
-      , "\\usepackage[]{geometry}"
-      , "\\geometry{paperwidth=\\dimexpr\\textwidth+3mm," <>
-        "paperheight=\\dimexpr\\textheight+3mm," <>
-        "margin=1.5mm}"
+      , "\\pagestyle{empty}"
       , preamble
       , "\\begin{document}"
       , "\\begin{" <> environment <> "}"
@@ -102,14 +96,14 @@ removeIfExists fileName = do
     fileExist <- doesFileExist fileName
     when fileExist (removeFile fileName)
 
-compileSvg :: CompilerOptions -> FormulaOptions -> Formula -> IO Document
+compileSvg :: CompilerOptions -> FormulaOptions -> Formula -> IO Text
 compileSvg CompilerOptions{..} opt eqn =
     let texF = basePath <.> "tex"
         auxF = basePath <.> "aux"
         logF = basePath <.> "log"
         pdfF = basePath <.> "pdf"
         svgF = basePath <.> "svg"
-        cleanUp = forM_ [texF, auxF, logF, pdfF] removeIfExists
+        cleanUp = forM_ [texF, auxF, logF, pdfF, svgF] removeIfExists
     in handle (\e -> do {cleanUp; throwIO (e :: SomeException)}) $ do
         let doc = formatDoc opt eqn
         T.writeFile texF doc
@@ -119,10 +113,6 @@ compileSvg CompilerOptions{..} opt eqn =
         (c, o, e) <- readProcessWithExitCode pdf2svgCommand [pdfF, svgF] ""
         when (c /= ExitSuccess) $
             throwIO $ PDFConversionError $ o <> "\n" <> e
-        svg <- BS.readFile svgF
-        let d = parseSvgFile "" svg
-        case d of
-          Nothing -> throwIO SVGFormatError
-          Just r -> do
-              cleanUp
-              return r
+        t <- T.readFile svgF
+        cleanUp
+        return $ T.intercalate "\n" $ tail $ T.lines t
