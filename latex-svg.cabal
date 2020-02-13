@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1d1b9bbc487675705f7786a53147ac478e716d36dccbfb1e67357a48207b3b42
+-- hash: 054614ca89d4fc6a0d4f80ffc5e340a546a3a22f6f008a7d937ac206b49a362c
 
 name:           latex-svg
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
       Text.LaTeX.SVG
       Text.LaTeX.SVG.Hakyll
       Text.LaTeX.SVG.Pandoc
+      Text.LaTeX.SVG.Util
   other-modules:
       Paths_latex_svg
   hs-source-dirs:
@@ -39,6 +40,7 @@ library
     , directory
     , filepath
     , lrucache
+    , megaparsec
     , pandoc-types >=1.19
     , process
     , text
@@ -58,6 +60,7 @@ executable latex-svg-filter
     , filepath
     , latex-svg
     , lrucache
+    , megaparsec
     , pandoc-types >=1.19
     , process
     , text

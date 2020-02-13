@@ -27,6 +27,7 @@ dependencies:
 - text
 - data-default
 - lrucache
+- megaparsec
 
 library:
   source-dirs: src

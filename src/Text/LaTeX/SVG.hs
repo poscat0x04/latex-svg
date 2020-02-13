@@ -20,6 +20,9 @@ import Control.Exception
 import Control.Monad
 import Data.Default
 import Data.Dynamic
+import Data.List
+import Text.LaTeX.SVG.Util
+import Text.Megaparsec
 import           Data.Text (Text)
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
@@ -29,6 +32,11 @@ data CompilerError
     | SVGFormatError
     | PDFConversionError String
     deriving Typeable
+
+data Crop = Full
+          | Vertical
+          | None
+          deriving (Show, Eq)
 
 instance Show CompilerError where
     show (LaTeXError s) = "LaTeX compilation failed with error: " <> s
@@ -58,7 +66,9 @@ instance Default CompilerOptions where
 
 data FormulaOptions
     = FormulaOptions
-      { preamble :: Text , environment :: Text
+      { preamble :: Text
+      , environment :: Text
+      , crop :: Crop
       }
 
 type Formula = Text
@@ -70,11 +80,11 @@ withPackage ps =
 
 simpleAmsInline :: FormulaOptions
 simpleAmsInline =
-    FormulaOptions (withPackage ["amsmath"]) "math"
+    FormulaOptions (withPackage ["amsmath"]) "math" Full
 
 simpleAmsDisplay :: FormulaOptions
 simpleAmsDisplay =
-    FormulaOptions (withPackage ["amsmath"]) "displaymath"
+    FormulaOptions (withPackage ["amsmath"]) "displaymath" Vertical
 
 formatDoc :: FormulaOptions -> Formula -> Text
 formatDoc FormulaOptions{..} f =
@@ -114,5 +124,25 @@ compileSvg CompilerOptions{..} opt eqn =
         when (c /= ExitSuccess) $
             throwIO $ PDFConversionError $ o <> "\n" <> e
         t <- T.readFile svgF
+        when (crop opt == Full) (fullCropPDF pdfF)
+        when (crop opt == Vertical) (verticalCropPDF pdfF)
         cleanUp
         return $ T.intercalate "\n" $ tail $ T.lines t
+
+verticalCropPDF :: FilePath -> IO ()
+verticalCropPDF f = do
+    (_, o, _) <- readProcessWithExitCode "pdfinfo" [f] ""
+    let l = head $ filter ("Page size:" `isPrefixOf`) $ lines o
+    print l
+    let Right (len, _) = runParser pageSizeParser "" l
+    (_, o, _) <- readProcessWithExitCode "pdfcrop" ["--verbose", f] ""
+    let l = head $ filter ("%%HiResBoundingBox" `isPrefixOf`) $ lines o
+    let Right (f1, _, f3, _) = runParser boundingBoxParser "" l
+    let arg = unwords [show f1, "10", show (len - f3), "10"]
+    readProcessWithExitCode "pdfcrop" ["--margins", arg, f, f] ""
+    return ()
+
+fullCropPDF :: FilePath -> IO ()
+fullCropPDF f = do
+    readProcessWithExitCode "pdfcrop" [f, f] ""
+    return ()
