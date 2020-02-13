@@ -120,12 +120,12 @@ compileSvg CompilerOptions{..} opt eqn =
         (c, o, e) <- readProcessWithExitCode latexCommand (latexArgs ++ [texF]) ""
         when (c /= ExitSuccess) $
             throwIO $ LaTeXError $ o <> "\n" <> e
+        when (crop opt == Full) (fullCropPDF pdfF)
+        when (crop opt == Vertical) (verticalCropPDF pdfF)
         (c, o, e) <- readProcessWithExitCode pdf2svgCommand [pdfF, svgF] ""
         when (c /= ExitSuccess) $
             throwIO $ PDFConversionError $ o <> "\n" <> e
         t <- T.readFile svgF
-        when (crop opt == Full) (fullCropPDF pdfF)
-        when (crop opt == Vertical) (verticalCropPDF pdfF)
         cleanUp
         return $ T.intercalate "\n" $ tail $ T.lines t
 
