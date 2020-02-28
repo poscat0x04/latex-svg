@@ -137,7 +137,7 @@ verticalCropPDF f = do
     let l = head $ filter ("Page size:" `isPrefixOf`) $ lines o
     print l
     let Right (len, _) = runParser pageSizeParser "" l
-    (_, o, _) <- readProcessWithExitCode "pdfcrop" ["--verbose", f] ""
+    (_, o, _) <- readProcessWithExitCode "pdfcrop" ["--verbose", f, f] ""
     let l = head $ filter ("%%HiResBoundingBox" `isPrefixOf`) $ lines o
     let Right (f1, _, f3, _) = runParser boundingBoxParser "" l
     let arg = unwords [show f1, "10", show (len - f3), "10"]
