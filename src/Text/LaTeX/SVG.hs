@@ -61,7 +61,7 @@ instance Default CompilerOptions where
           , pdf2svgCommand = "pdf2svg"
           , latexArgs = []
           , pdf2svgArgs = []
-          , basePath = "/tmp/latex-svg"
+          , basePath = "latex-svg"
           }
 
 data FormulaOptions
