@@ -96,8 +96,10 @@ formatDoc FormulaOptions{..} f =
       , preamble
       , "\\begin{document}"
       , "\\begin{" <> environment <> "}"
-      , f
-      , "\\end{" <> environment <> "}"
+      ]
+      <> f <>
+      fmt
+      [ "\\end{" <> environment <> "}"
       , "\\end{document}"
       ]
 
