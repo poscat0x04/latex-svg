@@ -5,6 +5,7 @@ module Text.LaTeX.SVG.Hakyll
 import Text.LaTeX.SVG
 import Text.LaTeX.SVG.Pandoc
 import Text.Pandoc.Definition
+import Text.Pandoc.Walk
 import Data.Cache.LRU.IO (AtomicLRU)
 import qualified Data.Cache.LRU.IO as LRU
 
@@ -26,10 +27,10 @@ withLRUCache cache f a = do
       Just b -> return b
 
 initPandocFilter
-  :: Maybe Integer
-  -> CompilerOptions
+  :: CompilerOptions
   -> PandocFormulaOptions
-  -> IO (Pandoc -> IO Pandoc)
-initPandocFilter size copt fopt = do
-    lru <- LRU.newAtomicLRU size
-    return $ withLRUCache lru (filterPandoc copt fopt)
+  -> Pandoc -> IO Pandoc
+initPandocFilter copt fopt pandoc = do
+    lru <- LRU.newAtomicLRU Nothing
+    let inlineF = withLRUCache lru (filterPandocInline copt fopt)
+    walkM inlineF pandoc
