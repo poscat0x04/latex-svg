@@ -23,6 +23,7 @@ import Data.Dynamic
 import Data.List
 import Text.LaTeX.SVG.Util
 import Text.Megaparsec
+import           Data.Text.Encoding.Base64
 import           Data.Text (Text)
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
@@ -129,7 +130,7 @@ compileSvg CompilerOptions{..} opt eqn =
             throwIO $ PDFConversionError $ o <> "\n" <> e
         t <- T.readFile svgF
         cleanUp
-        return $ T.intercalate "\n" $ tail $ T.lines t
+        return t
 
 verticalCropPDF :: FilePath -> IO ()
 verticalCropPDF f = do
