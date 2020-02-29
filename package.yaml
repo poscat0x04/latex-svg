@@ -25,6 +25,8 @@ dependencies:
 - directory
 - process
 - text
+- base64
+- html-entity
 - data-default
 - lrucache
 - megaparsec

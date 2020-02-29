@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 054614ca89d4fc6a0d4f80ffc5e340a546a3a22f6f008a7d937ac206b49a362c
+-- hash: 1f9bf9e4a8c37868e9f0c93886c352bb50d8eab04679e1230bb7c5e769804c82
 
 name:           latex-svg
 version:        0.1.0.0
@@ -36,9 +36,11 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , base64
     , data-default
     , directory
     , filepath
+    , html-entity
     , lrucache
     , megaparsec
     , pandoc-types >=1.19
@@ -55,9 +57,11 @@ executable latex-svg-filter
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , base64
     , data-default
     , directory
     , filepath
+    , html-entity
     , latex-svg
     , lrucache
     , megaparsec
