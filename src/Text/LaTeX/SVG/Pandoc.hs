@@ -5,9 +5,11 @@ module Text.LaTeX.SVG.Pandoc where
 import Text.Pandoc.Definition
 import Text.Pandoc.Walk
 import Data.Default
+import Data.Text.Encoding.Base64
 import System.IO
 import Control.Exception
 import Text.LaTeX.SVG
+import Text.HTMLEntity
 import qualified Data.Text as T
 
 
@@ -45,8 +47,14 @@ filterPandocInlineWith
   -> Inline -> IO Inline
 filterPandocInlineWith f opt (Math mt t) =
     handles (errorHandler opt) $ do
-      txt <- f (formulaOptions opt mt) t
-      return $ RawInline (Format "html") txt
+      svg <- f (formulaOptions opt mt) t
+      let b64 = encodeBase64 svg
+      let alt = encode t
+      let html = "<img src=\"data:image/svg+xml;base64," <> b64 <> "\""
+                 <> " alt=\"" <> alt <> "\""
+                 <> " class=" <> (case mt of InlineMath -> "inline-math"; DisplayMath -> "display-math")
+                 <> " style=\"margin:0\"" <> "/>"
+      return $ RawInline (Format "html") html
     where
       handles = flip catches
 filterPandocInlineWith _ _ x = return x
