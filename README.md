@@ -1,3 +1,4 @@
 # latex-svg
 
-latex-svg compiles latex into svg which can be further embedded into HTML
+latex-svg is a thin wrapper around `xelatex` and `pdfcrop`  
+It is intended to be used in hakyll to render math formulae as svg images.  
